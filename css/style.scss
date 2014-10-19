@@ -1,10 +1,17 @@
 line
 {
-  stroke: #cccccc;
-  stroke-width: 1;
+  z-index: 3;
+  stroke: #fff;
+  stroke-width: 1.5px;
 }
 
 circle
 {
-  fill: blue;
+  z-index: 2;
+  stroke: #999;
+  stroke-opacity: .6;
+}
+
+.graph {
+  border: 1px solid;
 }

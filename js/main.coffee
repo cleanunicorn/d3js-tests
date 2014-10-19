@@ -1,5 +1,5 @@
-width = 400
-height = 400
+width = 800
+height = 600
 
 vis = d3.select('#graph').append('svg')
 vis.attr 'width', width
@@ -9,17 +9,23 @@ vis.attr 'height', height
 graph_data = {}
 
 # Graph nodes
-graph_data['nodes'] = [
-  {x: 100, y: 200}
-  {x: 150, y: 200}
-  {x: 120, y: 120}
-]
+nodes_number = 40
+graph_data['nodes'] = []
+for i in [1..nodes_number]
+  graph_data['nodes'].push({
+    x: parseInt(Math.random()*width)
+    y: parseInt(Math.random()*height)
+    color: parseInt(Math.random()*255)
+  })
 
 # Graph links
-graph_data['links'] = [
-  {source: graph_data['nodes'][0], target: graph_data['nodes'][1]}
-  {source: graph_data['nodes'][2], target: graph_data['nodes'][1]}
-]
+links_number = parseInt(nodes_number * (2 / 3))
+graph_data['links'] = []
+for i in [1..links_number]
+  graph_data['links'].push({
+    source: graph_data['nodes'][parseInt(Math.random()*nodes_number)]
+    target: graph_data['nodes'][parseInt(Math.random()*nodes_number)]
+  })
 
 # Force
 force = d3.layout.force()
@@ -27,7 +33,7 @@ force = d3.layout.force()
   .nodes(graph_data.nodes)
   .links(graph_data.links)
   .gravity(0.03)
-  .distance(100)
+  .distance(50)
   .start()
 
 tick = ()->
@@ -61,6 +67,8 @@ dragend = (d, i)->
   force.resume();
 
 # Add nodes
+color = d3.scale.category20()
+
 circles = vis.selectAll("circle")
   .data(graph_data['nodes'])
   .enter()
@@ -68,10 +76,9 @@ circles = vis.selectAll("circle")
   .attr("class", "node")
   .attr("cx", (d)-> return d.x)
   .attr("cy", (d)-> return d.y)
-  .attr("r", "5")
-  .attr("fill", "black")
-  .attr("stroke", "#ff0000")
-  .call(node_drag)
+  .attr("r", "15")
+  .attr("fill", (d)-> return color(d.color))
+  .call(force.drag)
 
 # Links
 edges = vis.selectAll("line")
@@ -82,7 +89,7 @@ edges = vis.selectAll("line")
   .attr("y1", (d)-> return d.source.y)
   .attr("x2", (d)-> return d.target.x)
   .attr("y2", (d)-> return d.target.y)
-  .style("stroke", "rgb(6,120,155)")
+  .style("stroke", "rgba(0,0,0,0.5)")
 
 force.on("tick", tick)
 
